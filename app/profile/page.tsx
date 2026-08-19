@@ -15,6 +15,8 @@ import { useMoonWallet } from "@/components/WalletProvider";
 import { useWalletModal } from "@/components/SolanaProvider";
 import { useTheme } from "@/components/ThemeProvider";
 import { LineChart, Line, ResponsiveContainer } from "recharts";
+import { useTokenBalances } from "@/hooks/useTokenBalances";
+import type { TokenHolding } from "@/hooks/useTokenBalances";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -107,6 +109,15 @@ export default function ProfilePage() {
 
   useEffect(() => { fetchProfile(); fetchFollows(); }, [fetchProfile, fetchFollows]);
 
+  // ── Real on-chain portfolio data ──
+  const { holdings: realHoldings, summary: portfolioSummary, isLoading: isLoadingBalances, refreshBalances, lastFetched, fetchBalances } = useTokenBalances();
+
+  useEffect(() => {
+    if (connected && address) {
+      fetchBalances();
+    }
+  }, [connected, address, fetchBalances]);
+
   const handleSaveProfile = async () => {
     if (!address) return;
     setIsSaving(true);
@@ -159,6 +170,30 @@ export default function ProfilePage() {
   const pnlSol = dbStats?.pnlSol ?? 0;
   const tokensLaunched = dbStats?.tokensLaunched ?? CREATED_TOKENS.length;
   const totalTrades = dbStats?.totalTrades ?? 62;
+
+  // Portfolio display values from real on-chain data
+  const netWorthUsd = portfolioSummary.totalValueUsd > 0
+    ? `$${portfolioSummary.totalValueUsd.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
+    : "$10,972";
+  const netWorthSol = portfolioSummary.totalValueSol > 0
+    ? `${portfolioSummary.totalValueSol.toFixed(2)} SOL`
+    : `${volumeSol} SOL`;
+  const holdingsCount = realHoldings.length > 0 ? realHoldings.length : HOLDINGS.length;
+
+  // Convert real holdings to display format (or use mock fallback)
+  const displayHoldings = realHoldings.length > 0 ? realHoldings.map((h: TokenHolding) => ({
+    icon: h.isMoonFluxx ? "🚀" : "💎",
+    name: h.name || `${h.mint.slice(0, 4)}...${h.mint.slice(-4)}`,
+    ticker: h.ticker || h.mint.slice(0, 6),
+    qty: h.balance.toLocaleString(undefined, { maximumFractionDigits: 2 }),
+    value: h.valueUsd != null ? `$${h.valueUsd.toLocaleString(undefined, { maximumFractionDigits: 0 })}` : "--",
+    pnl: "--",
+    pnlPct: h.isMoonFluxx ? (h.graduated ? "GRADUATED" : `${(h.curveProgress || 0).toFixed(0)}% CURVE`) : "",
+    pos: true,
+    color: h.isMoonFluxx ? "#6366F1" : "#818CF8",
+    sparkline: [] as number[],
+    mint: h.mint,
+  })) : HOLDINGS;
 
   const handleCopy = () => {
     if (address) { navigator.clipboard.writeText(address); }
@@ -370,7 +405,7 @@ export default function ProfilePage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
         {[
           {
-            title: "NET WORTH", value: "$10,972", sub: "▲ +$1,987 (24H)",
+            title: "NET WORTH", value: netWorthUsd, sub: `▲ ${netWorthSol}`,
             color: "#10B981", bg: isDark ? "bg-[#10B981]/10" : "bg-[#10B981]", text: isDark ? "text-white" : "text-black",
             subStyle: isDark ? "text-[#10B981] bg-[#10B981]/20 border-[#10B981]" : "text-black bg-white border-black"
           },
@@ -444,8 +479,21 @@ export default function ProfilePage() {
             {/* Holdings Table */}
             <div className={`flex-1 ${bBorder} ${bShadow} ${bBg}`}>
               <div className={`px-4 py-3 border-b ${isDark ? "border-[rgba(255,255,255,0.2)] bg-[#0A0A1A]" : "border-black bg-gray-100"} flex items-center justify-between`}>
-                <span className={`font-black ${bText}`}>[ CURRENT HOLDINGS ]</span>
-                <span className={`text-xs font-bold ${bMuted}`}>4 ASSETS</span>
+                <span className={`font-black ${bText}`}>[ {realHoldings.length > 0 ? "ON-CHAIN" : "CURRENT"} HOLDINGS ]</span>
+                <div className="flex items-center gap-3">
+                  {lastFetched && (
+                    <span className={`text-[9px] font-bold ${bMuted}`}>
+                      UPDATED {Math.floor((Date.now() - lastFetched) / 1000)}S AGO
+                    </span>
+                  )}
+                  <button
+                    onClick={refreshBalances}
+                    disabled={isLoadingBalances}
+                    className={`px-2 py-1 text-[10px] font-black uppercase transition-all ${bBorder} ${isDark ? "bg-black text-[#10B981] hover:bg-[#10B981] hover:text-black" : "bg-white text-black hover:bg-[#10B981]"} ${isLoadingBalances ? "animate-pulse" : ""}`}
+                  >
+                    {isLoadingBalances ? "SYNCING..." : `↻ REFRESH (${holdingsCount})`}
+                  </button>
+                </div>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left whitespace-nowrap">
@@ -454,12 +502,32 @@ export default function ProfilePage() {
                       <th className="px-4 py-3">ASSET</th>
                       <th className="px-4 py-3 hidden sm:table-cell">BALANCE</th>
                       <th className="px-4 py-3">VALUE</th>
-                      <th className="px-4 py-3">PNL</th>
+                      <th className="px-4 py-3">STATUS</th>
                       <th className="px-4 py-3 hidden md:table-cell">7D TREND</th>
                     </tr>
                   </thead>
                   <tbody className={`divide-y ${isDark ? "divide-[rgba(255,255,255,0.2)]" : "divide-black"}`}>
-                    {HOLDINGS.map((h, i) => (
+                    {/* SOL Balance Row */}
+                    {portfolioSummary.solBalance > 0 && (
+                      <tr className={`hover:bg-[#10B981]/10 transition-colors ${bText}`}>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-8 h-8 flex items-center justify-center border ${isDark ? "border-[rgba(255,255,255,0.2)] bg-black" : "border-black bg-white"}`}>◎</div>
+                            <div>
+                              <div className="font-black text-sm">SOLANA</div>
+                              <div className={`text-[10px] font-bold ${bMuted}`}>$SOL</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 font-bold text-xs hidden sm:table-cell">{portfolioSummary.solBalance.toFixed(4)}</td>
+                        <td className="px-4 py-3 font-black text-sm">${(portfolioSummary.solBalance * (portfolioSummary.totalValueUsd / portfolioSummary.totalValueSol || 150)).toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
+                        <td className="px-4 py-3">
+                          <span className={`text-[9px] font-bold border px-1 ${isDark ? "border-[#10B981] text-[#10B981]" : "border-black bg-[#10B981] text-black"}`}>NATIVE</span>
+                        </td>
+                        <td className="px-4 py-3 hidden md:table-cell"><span className={`text-xs ${bMuted}`}>—</span></td>
+                      </tr>
+                    )}
+                    {displayHoldings.map((h: any, i: number) => (
                       <tr key={i} className={`hover:bg-[#10B981]/10 transition-colors ${bText}`}>
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-3">
@@ -476,20 +544,26 @@ export default function ProfilePage() {
                         <td className="px-4 py-3 font-black text-sm">{h.value}</td>
                         <td className="px-4 py-3">
                           <div className="flex flex-col">
-                            <span className={`font-black text-sm ${h.pos ? "text-[#10B981]" : "text-[#F43F5E]"}`}>{h.pnl}</span>
-                            <span className={`text-[9px] font-bold border px-1 w-fit ${h.pos ? (isDark ? "border-[#10B981] text-[#10B981]" : "border-black bg-[#10B981] text-black") : (isDark ? "border-[#F43F5E] text-[#F43F5E]" : "border-black bg-[#F43F5E] text-white")}`}>
-                              {h.pnlPct}
-                            </span>
+                            {h.pnl !== "--" && <span className={`font-black text-sm ${h.pos ? "text-[#10B981]" : "text-[#F43F5E]"}`}>{h.pnl}</span>}
+                            {h.pnlPct && (
+                              <span className={`text-[9px] font-bold border px-1 w-fit ${h.pos ? (isDark ? "border-[#10B981] text-[#10B981]" : "border-black bg-[#10B981] text-black") : (isDark ? "border-[#818CF8] text-[#818CF8]" : "border-black bg-[#818CF8] text-white")}`}>
+                                {h.pnlPct}
+                              </span>
+                            )}
                           </div>
                         </td>
                         <td className="px-4 py-3 hidden md:table-cell">
+                          {h.sparkline && h.sparkline.length > 0 ? (
                           <div className="w-20 h-8">
                             <ResponsiveContainer width="100%" height="100%">
-                              <LineChart data={h.sparkline.map((v, idx) => ({ x: idx, y: v }))}>
+                              <LineChart data={h.sparkline.map((v: number, idx: number) => ({ x: idx, y: v }))}>
                                 <Line type="step" dataKey="y" stroke={h.pos ? "#10B981" : "#F43F5E"} strokeWidth={2} dot={false} />
                               </LineChart>
                             </ResponsiveContainer>
                           </div>
+                          ) : (
+                            <span className={`text-xs ${bMuted}`}>—</span>
+                          )}
                         </td>
                       </tr>
                     ))}
