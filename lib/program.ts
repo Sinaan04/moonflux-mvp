@@ -47,6 +47,27 @@ export function getGlobalConfigPDA(): PublicKey {
   )[0];
 }
 
+/**
+ * Derives the migration wallet PDA for a given token mint.
+ * This is where SOL + tokens are sent when `migrate` is called.
+ * 
+ * NOTE: If this seed doesn't match the on-chain program, the migrate
+ * transaction will fail with an "account address mismatch" error.
+ * In that case, try alternative seeds: ['migration'], ['migrate', mint], etc.
+ */
+export function getMigrationWalletPDA(mint: PublicKey): PublicKey {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from('migration'), mint.toBuffer()],
+    PROGRAM_ID
+  )[0];
+}
+
+// ── Constants ─────────────────────────────────────────────────────────────────
+
+/** Graduation threshold in SOL — when realSolReserves reaches this, curve is complete */
+export const GRADUATION_CAP_SOL = 85;
+export const GRADUATION_CAP_LAMPORTS = GRADUATION_CAP_SOL * 1_000_000_000;
+
 // ── Math helpers (mirrors the on-chain constant product math) ─────────────────
 
 const LAMPORTS = 1_000_000_000; // 1 SOL in lamports
