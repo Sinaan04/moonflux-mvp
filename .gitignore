@@ -32,6 +32,14 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# keys — NEVER commit these
+wallet.json
+*-keypair.json
+id.json
+
+# E2E test run outputs (local only)
+scripts/*-result.json
+
 .vercel
 .env.local
 .env*.local
