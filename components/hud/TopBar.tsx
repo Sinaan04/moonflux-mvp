@@ -24,44 +24,45 @@ export default function TopBar() {
 
   return (
     <header
-      className="fixed top-0 left-0 right-0 z-50 flex items-center px-3 sm:px-5 gap-3 font-mono uppercase tracking-wider"
+      className="fixed top-0 left-0 right-0 z-50 flex items-center px-4 sm:px-6 gap-4 font-sans backdrop-blur-2xl transition-all duration-300"
       style={{
         height: 64,
-        backgroundColor: isDark ? '#050510' : '#FFFFFF',
-        borderBottom: `3px solid ${borderColor}`,
+        backgroundColor: isDark ? 'rgba(3, 5, 12, 0.78)' : 'rgba(255, 255, 255, 0.85)',
+        borderBottom: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)'}`,
+        boxShadow: isDark ? '0 10px 30px -10px rgba(0, 0, 0, 0.5)' : '0 10px 30px -10px rgba(0, 0, 0, 0.05)',
       }}
     >
       {/* ── Logo ── */}
-      <Link href="/" className="flex items-center gap-2.5 shrink-0 group mr-2 sm:mr-4">
+      <Link href="/" className="flex items-center gap-3 shrink-0 group mr-2 sm:mr-4">
         <LogoMark size={28} />
         <span
-          className={`hidden sm:inline font-medium text-sm tracking-[0.22em] uppercase transition-colors ${isDark ? 'group-hover:text-[#818CF8]' : 'group-hover:text-[#6366F1]'}`}
-          style={{ fontFamily: "'Clash Display', sans-serif" }}
+          className={`hidden sm:inline font-bold text-base tracking-[-0.03em] uppercase transition-all duration-200 ${isDark ? 'text-white group-hover:text-[#818CF8]' : 'text-slate-900 group-hover:text-[#6366F1]'}`}
+          style={{ fontFamily: "var(--font-display)" }}
         >
-          MoonFluxx<sup style={{ fontSize: '0.5em', fontWeight: 300, letterSpacing: 0 }}>®</sup>
+          MoonFluxx<span className="text-[#6366F1] font-black text-xs ml-0.5 tracking-normal">®</span>
         </span>
       </Link>
 
       {/* ── Search ── */}
       <div className="flex-1 flex justify-center">
         {/* Desktop search */}
-        <div className="hidden md:flex relative w-full" style={{ maxWidth: 480 }}>
+        <div className="hidden md:flex relative w-full group/search" style={{ maxWidth: 440 }}>
           <Search
-            size={15}
-            className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
-            style={{ color: isDark ? 'rgba(255,255,255,0.3)' : '#999' }}
+            size={14}
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none transition-colors group-hover/search:text-[#6366F1]"
+            style={{ color: isDark ? 'rgba(255,255,255,0.4)' : '#64748B' }}
           />
           <input
             type="text"
-            placeholder="> SEARCH_TOKENS.EXE --QUERY='...'"
+            placeholder="Search tokens, pairs or contracts ( / )..."
             readOnly
             onClick={() => setSearchModalOpen(true)}
             className={`
-              w-full h-10 pl-9 pr-16 font-mono font-bold text-xs uppercase tracking-wider cursor-pointer
+              w-full h-9 pl-9 pr-14 font-sans text-xs tracking-normal rounded-xl cursor-pointer
               ${isDark 
-                ? 'bg-black text-white border-2 border-[rgba(255,255,255,0.2)] placeholder-[rgba(255,255,255,0.25)] focus:border-[#6366F1]' 
-                : 'bg-gray-50 text-black border-2 border-black placeholder-gray-400 focus:border-[#6366F1]'}
-              outline-none transition-colors
+                ? 'bg-white/[0.04] text-slate-200 border border-white/[0.08] hover:border-white/[0.18] placeholder-white/30 focus:border-[#6366F1]/60 focus:bg-white/[0.06]' 
+                : 'bg-slate-100/80 text-slate-900 border border-slate-200/80 hover:border-slate-300 placeholder-slate-400 focus:border-[#6366F1]'}
+              outline-none transition-all duration-200
             `}
           />
           <kbd
@@ -100,14 +101,14 @@ export default function TopBar() {
         onClick={toggleTheme}
         aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
         className={`
-          flex items-center justify-center w-9 h-9 shrink-0 font-black transition-all
+          flex items-center justify-center w-9 h-9 rounded-xl shrink-0 transition-all duration-200
           ${isDark 
-            ? 'bg-black text-[#F59E0B] border-2 border-[rgba(255,255,255,0.2)] hover:border-[#F59E0B] hover:shadow-[2px_2px_0px_0px_#F59E0B]' 
-            : 'bg-white text-[#6366F1] border-2 border-black hover:bg-[#6366F1] hover:text-white hover:shadow-[2px_2px_0px_0px_#000]'}
-          active:translate-y-0.5 active:shadow-none
+            ? 'bg-white/[0.04] text-slate-300 border border-white/[0.08] hover:bg-white/[0.08] hover:text-amber-400' 
+            : 'bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200/80 hover:text-indigo-600'}
+          active:scale-95
         `}
       >
-        {isDark ? <Sun size={16} /> : <Moon size={16} />}
+        {isDark ? <Sun size={15} /> : <Moon size={15} />}
       </button>
 
       {/* ── Wallet ── */}
@@ -115,30 +116,32 @@ export default function TopBar() {
         {connected && address ? (
           <button
             className={`
-              flex items-center gap-2 h-9 px-3 font-mono font-black text-xs tracking-wider
+              flex items-center gap-2 h-9 px-3.5 rounded-xl font-mono text-xs font-semibold tracking-tight
               ${isDark 
-                ? 'bg-black text-[#10B981] border-2 border-[#10B981] shadow-[2px_2px_0px_0px_#10B981]' 
-                : 'bg-white text-black border-2 border-black shadow-[2px_2px_0px_0px_#10B981]'}
-              hover:-translate-y-0.5 active:translate-y-0.5 active:shadow-none transition-all
+                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20' 
+                : 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100'}
+              transition-all duration-200 active:scale-95
             `}
           >
-            <span className="w-2 h-2 bg-[#10B981] shrink-0 shadow-[0_0_6px_#10B981]" />
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             {shortenAddr(address)}
           </button>
         ) : (
           <button
             onClick={() => setModalOpen(true)}
             className={`
-              flex items-center justify-center h-9 px-4 font-mono font-black text-xs tracking-wider
-              bg-[#6366F1] text-white
-              ${isDark ? 'border-2 border-[rgba(255,255,255,0.3)]' : 'border-2 border-black'}
-              shadow-[3px_3px_0px_0px_#10B981]
-              hover:shadow-[5px_5px_0px_0px_#10B981] hover:-translate-y-0.5
-              active:translate-y-0.5 active:shadow-none
-              transition-all
+              relative group/btn flex items-center justify-center h-9 px-4 rounded-xl font-sans text-xs font-bold tracking-tight
+              text-white overflow-hidden shadow-lg transition-all duration-200 active:scale-95
             `}
+            style={{
+              background: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)',
+              boxShadow: '0 4px 14px 0 rgba(99, 102, 241, 0.35)',
+            }}
           >
-            [ CONNECT WALLET ]
+            <span className="relative z-10 flex items-center gap-1.5">
+              Connect Wallet
+            </span>
+            <div className="absolute inset-0 bg-white/20 opacity-0 group-hover/btn:opacity-100 transition-opacity" />
           </button>
         )}
       </div>

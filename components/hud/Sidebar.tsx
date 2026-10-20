@@ -67,21 +67,25 @@ function NavLink({
     <Link href={item.href} className="block relative group/link">
       <div
         className={`
-          flex items-center gap-3 px-3 py-2.5 cursor-pointer transition-all duration-150 font-mono font-black uppercase tracking-wider text-sm
+          flex items-center gap-3 px-3 py-2 rounded-xl cursor-pointer transition-all duration-200 font-sans font-medium text-xs tracking-normal
           ${isActive 
-            ? `${isDark ? 'bg-[#6366F1] text-white border-2 border-[rgba(255,255,255,0.2)]' : 'bg-[#6366F1] text-white border-3 border-black'}` 
-            : `${isDark ? 'text-[rgba(255,255,255,0.5)] hover:text-white hover:bg-[rgba(255,255,255,0.05)]' : 'text-gray-500 hover:text-black hover:bg-gray-100'} border-2 border-transparent`
+            ? `${isDark 
+                ? 'bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 shadow-[0_0_20px_rgba(99,102,241,0.15)]' 
+                : 'bg-indigo-50 text-indigo-600 border border-indigo-200 shadow-sm'}` 
+            : `${isDark 
+                ? 'text-slate-400 hover:text-slate-100 hover:bg-white/[0.04]' 
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'} border border-transparent`
           }
         `}
       >
         {/* Icon */}
-        <div className="flex items-center justify-center w-7 h-7 shrink-0">
-          <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+        <div className="flex items-center justify-center w-6 h-6 shrink-0 transition-transform duration-200 group-hover/link:scale-105">
+          <Icon size={18} strokeWidth={isActive ? 2.25 : 1.75} />
         </div>
 
         {/* Label */}
         {expanded && (
-          <span className="whitespace-nowrap text-sm">
+          <span className="whitespace-nowrap font-medium text-xs">
             {item.label}
           </span>
         )}
@@ -92,13 +96,14 @@ function NavLink({
         <div
           className={`
             absolute left-full top-1/2 -translate-y-1/2 ml-3
-            px-3 py-2
-            text-xs font-mono font-black uppercase tracking-wider whitespace-nowrap
+            px-2.5 py-1.5 rounded-lg
+            text-[11px] font-sans font-medium whitespace-nowrap shadow-xl
             opacity-0 group-hover/link:opacity-100
             transition-opacity duration-150
             pointer-events-none z-50
-            ${isDark ? 'bg-black text-white border-2 border-[rgba(255,255,255,0.2)]' : 'bg-white text-black border-3 border-black'}
-            shadow-[3px_3px_0px_0px_#6366F1]
+            ${isDark 
+              ? 'bg-[#0d1224] text-slate-100 border border-white/[0.12] shadow-black/60' 
+              : 'bg-white text-slate-900 border border-slate-200 shadow-slate-300/40'}
           `}
         >
           {item.label}
@@ -127,32 +132,32 @@ export default function Sidebar() {
   return (
     <>
       <aside
-        className={`hidden md:flex flex-col fixed left-0 top-16 bottom-0 z-40`}
+        className={`hidden md:flex flex-col fixed left-0 top-16 bottom-0 z-40 backdrop-blur-2xl`}
         style={{
           width: sidebarWidth,
-          backgroundColor: isDark ? '#050510' : '#FFFFFF',
-          borderRight: `3px solid ${borderColor}`,
+          backgroundColor: isDark ? 'rgba(3, 5, 12, 0.78)' : 'rgba(255, 255, 255, 0.85)',
+          borderRight: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)'}`,
           transition: 'width 250ms cubic-bezier(0.16,1,0.3,1)',
         }}
       >
         {/* ── Toggle Button ── */}
-        <div className={`flex items-center ${expanded ? 'justify-end' : 'justify-center'} px-2 pt-2 pb-1 shrink-0`}>
+        <div className={`flex items-center ${expanded ? 'justify-end' : 'justify-center'} px-3 pt-3 pb-1 shrink-0`}>
           <button
             onClick={toggle}
             className={`
-              p-2 font-mono font-black transition-all
+              p-1.5 rounded-lg transition-all duration-200
               ${isDark 
-                ? 'text-[rgba(255,255,255,0.4)] hover:text-white hover:bg-[rgba(255,255,255,0.05)] border-2 border-[rgba(255,255,255,0.1)] hover:border-[rgba(255,255,255,0.3)]' 
-                : 'text-gray-400 hover:text-black hover:bg-gray-100 border-2 border-gray-200 hover:border-black'}
+                ? 'text-slate-400 hover:text-white hover:bg-white/[0.06] border border-white/[0.08]' 
+                : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100 border border-slate-200'}
             `}
             title={expanded ? 'Collapse sidebar' : 'Expand sidebar'}
           >
-            {expanded ? <PanelLeftClose size={18} /> : <PanelLeft size={18} />}
+            {expanded ? <PanelLeftClose size={16} /> : <PanelLeft size={16} />}
           </button>
         </div>
 
         {/* ── Main nav ── */}
-        <nav className="flex flex-col gap-0.5 px-2 pt-1 overflow-x-hidden">
+        <nav className="flex flex-col gap-1 px-2.5 pt-2 overflow-x-hidden">
           {MAIN_ITEMS.map((item) => (
             <NavLink
               key={item.href}
@@ -163,39 +168,43 @@ export default function Sidebar() {
           ))}
 
           {/* ── LAUNCH BUTTON (right below Community) ── */}
-          <div className="mt-1">
+          <div className="mt-2 pt-2 border-t border-white/[0.08]">
             <Link href="/launch" className="block relative group/link">
               <div
                 className={`
-                  flex items-center gap-3 px-3 py-2.5 cursor-pointer font-mono font-black uppercase tracking-wider text-sm
-                  bg-[#10B981] text-black transition-all
-                  ${isDark ? 'border-2 border-[rgba(255,255,255,0.2)]' : 'border-3 border-black'}
-                  ${isDark ? 'shadow-[3px_3px_0px_0px_rgba(255,255,255,0.3)]' : 'shadow-[3px_3px_0px_0px_#000]'}
-                  hover:shadow-[5px_5px_0px_0px_#F59E0B] hover:-translate-y-0.5
-                  active:translate-y-0.5 active:shadow-none
-                  ${pathname === '/launch' ? 'ring-2 ring-white' : ''}
+                  flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer font-sans font-semibold text-xs tracking-normal
+                  text-white transition-all duration-200 active:scale-95 shadow-lg
                 `}
+                style={{
+                  background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                  boxShadow: '0 4px 14px 0 rgba(16, 185, 129, 0.25)',
+                }}
               >
-                <div className="flex items-center justify-center w-7 h-7 shrink-0">
-                  <Rocket size={20} strokeWidth={2.5} />
+                <div className="flex items-center justify-center w-6 h-6 shrink-0">
+                  <Rocket size={17} className="group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
                 </div>
-                {expanded && <span>Launch</span>}
+                {expanded && (
+                  <span className="whitespace-nowrap font-bold">
+                    Launch Token
+                  </span>
+                )}
               </div>
               {/* Tooltip when collapsed */}
               {!expanded && (
                 <div
                   className={`
                     absolute left-full top-1/2 -translate-y-1/2 ml-3
-                    px-3 py-2
-                    text-xs font-mono font-black uppercase tracking-wider whitespace-nowrap
+                    px-2.5 py-1.5 rounded-lg
+                    text-[11px] font-sans font-medium whitespace-nowrap shadow-xl
                     opacity-0 group-hover/link:opacity-100
                     transition-opacity duration-150
                     pointer-events-none z-50
-                    ${isDark ? 'bg-black text-white border-2 border-[rgba(255,255,255,0.2)]' : 'bg-white text-black border-3 border-black'}
-                    shadow-[3px_3px_0px_0px_#10B981]
+                    ${isDark 
+                      ? 'bg-[#0d1224] text-slate-100 border border-white/[0.12] shadow-black/60' 
+                      : 'bg-white text-slate-900 border border-slate-200 shadow-slate-300/40'}
                   `}
                 >
-                  Launch
+                  Launch Token
                 </div>
               )}
             </Link>

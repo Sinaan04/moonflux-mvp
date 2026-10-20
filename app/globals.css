@@ -3,30 +3,29 @@
    Tailwind CSS v4 · globals.css · Hallmark-locked
    ══════════════════════════════════════════════════════════════ */
 
-/* ── ULTRA-EXECUTIVE HIGH-TECH FONTS (Clash Display + Outfit + Inter + JetBrains Mono) ── */
-@import url('https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
-
+/* ── ULTRA-PREMIUM CONTEMPORARY TYPOGRAPHY (Syne + Satoshi + Plus Jakarta Sans + JetBrains Mono) ── */
+@import url('https://api.fontshare.com/v2/css?f[]=clash-display@300,400,500,600,700&f[]=satoshi@400,500,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 @import "tailwindcss";
 
 @theme {
 
   /* ── SURFACES (Pitch-Black Galaxy Hierarchy) ── */
-  --color-surface-base:     #000000;
-  --color-surface-1:        #050510;
-  --color-surface-2:        #0A0E27;
-  --color-surface-3:        #0F1330;
-  --color-surface-4:        #161B3A;
-  --color-surface-hover:    #1C2244;
-  --color-surface-elevated: #0A0E27;
+  --color-surface-base:     #03050c;
+  --color-surface-1:        #070a16;
+  --color-surface-2:        #0d1224;
+  --color-surface-3:        #141c38;
+  --color-surface-4:        #1d274d;
+  --color-surface-hover:    #24305f;
+  --color-surface-elevated: #0d1224;
 
-  --color-text-primary:   #F1F5F9;
+  --color-text-primary:   #F8FAFC;
   --color-text-secondary: #94A3B8;
-  --color-text-muted:     #94A3B8;
-  --color-text-faint:     #64748B;
+  --color-text-muted:     #64748B;
+  --color-text-faint:     #475569;
 
-  /* ── BRAND INDIGO ── */
+  /* ── BRAND INDIGO & FLUID VIOLET ── */
   --color-indigo-50:  #EEF2FF;
   --color-indigo-100: #E0E7FF;
   --color-indigo-200: #C7D2FE;
@@ -38,7 +37,7 @@
   --color-indigo-800: #3730A3;
   --color-indigo-900: #312E81;
 
-  /* ── GALAXY ACCENTS (NEW) ── */
+  /* ── GALAXY ACCENTS ── */
   --color-galaxy-violet:  #A78BFA;
   --color-galaxy-purple:  #C084FC;
   --color-galaxy-pink:    #EC4899;
@@ -58,25 +57,25 @@
   --color-cyan-muted:    rgba(6, 182, 212, 0.12);
 
   /* ── BORDERS ── */
-  --color-border-default: rgba(99, 102, 241, 0.08);
-  --color-border-subtle:  rgba(99, 102, 241, 0.15);
-  --color-border-strong:  rgba(99, 102, 241, 0.30);
-  --color-border-focus:   rgba(99, 102, 241, 0.55);
+  --color-border-default: rgba(255, 255, 255, 0.07);
+  --color-border-subtle:  rgba(255, 255, 255, 0.12);
+  --color-border-strong:  rgba(99, 102, 241, 0.35);
+  --color-border-focus:   rgba(99, 102, 241, 0.65);
 
   /* ── GLASS PANELS ── */
-  --glass-void:   rgba(0, 0, 0, 0.90);
-  --glass-space:  rgba(5, 5, 16, 0.80);
-  --glass-nebula: rgba(10, 14, 39, 0.65);
-  --glass-panel:  rgba(15, 19, 48, 0.50);
+  --glass-void:   rgba(3, 5, 12, 0.92);
+  --glass-space:  rgba(7, 10, 22, 0.85);
+  --glass-nebula: rgba(13, 18, 36, 0.70);
+  --glass-panel:  rgba(20, 28, 56, 0.55);
 
-  /* ── LEGACY TOKENS (mapped to galaxy palette) ── */
-  --color-mf-bg-primary:  #000000;
-  --color-mf-bg-surface:  #050510;
-  --color-mf-bg-elevated: #0A0E27;
-  --color-mf-bg-hover:    #0F1330;
-  --color-mf-ink:         #F1F5F9;
+  /* ── LEGACY TOKENS ── */
+  --color-mf-bg-primary:  #03050c;
+  --color-mf-bg-surface:  #070a16;
+  --color-mf-bg-elevated: #0d1224;
+  --color-mf-bg-hover:    #141c38;
+  --color-mf-ink:         #F8FAFC;
   --color-mf-dim:         #94A3B8;
-  --color-mf-dimmer:      #475569;
+  --color-mf-dimmer:      #64748B;
   --color-mf-violet:      #6366F1;
   --color-mf-hot:         #818CF8;
   --color-mf-ice:         #06B6D4;
@@ -85,19 +84,19 @@
   --color-mf-gold-hi:     #FCD34D;
   --color-mf-gold-deep:   #D97706;
   --color-mf-champagne:   #F1F5F9;
-  --color-mf-obsidian:    #000000;
+  --color-mf-obsidian:    #03050c;
   --color-mf-danger:      #F43F5E;
   --color-mf-success:     #10B981;
   --color-mf-warning:     #F59E0B;
-  --color-mf-line:        rgba(99, 102, 241, 0.10);
-  --color-mf-line-gold:   rgba(99, 102, 241, 0.15);
-  --color-mf-glass:       rgba(0, 0, 0, 0.85);
+  --color-mf-line:        rgba(255, 255, 255, 0.08);
+  --color-mf-line-gold:   rgba(245, 158, 11, 0.15);
+  --color-mf-glass:       rgba(7, 10, 22, 0.85);
 
-  /* ── FONTS (Ultra-Executive High-Tech Stack) ── */
-  --font-display:    'Clash Display', 'Outfit', sans-serif;
-  --font-heading:    'Clash Display', 'Outfit', sans-serif;
-  --font-body:       'Outfit', 'Inter', -apple-system, sans-serif;
-  --font-body-inter: 'Inter', sans-serif;
+  /* ── FONTS (Ultra-Bespoke Fintech Stack — non-generic) ── */
+  --font-display:    'Syne', 'Clash Display', sans-serif;
+  --font-heading:    'Syne', sans-serif;
+  --font-body:       'Plus Jakarta Sans', 'Satoshi', sans-serif;
+  --font-body-inter: 'Plus Jakarta Sans', sans-serif;
   --font-mono:       'JetBrains Mono', monospace;
 
   /* ── MOTION ── */
